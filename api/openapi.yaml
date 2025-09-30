@@ -1,0 +1,2055 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: kthare10@unc.edu
+    name: Komal Thareja
+  description: This is Fabric Orchestrator API
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: None
+  title: Fabric Orchestrator API
+  version: 1.0.1
+servers:
+- description: local development
+  url: http://127.0.0.1:8700/
+- description: SwaggerHub API Auto Mocking
+  url: https://virtserver.swaggerhub.com/kthare10/orchestrator/1.0.1
+tags:
+- description: Control Framework Metrics
+  name: metrics
+- description: Slices in FABRIC
+  name: slices
+- description: Slivers in FABRIC slices
+  name: slivers
+- description: Resources in FABRIC
+  name: resources
+- description: Default information
+  name: default
+paths:
+  /version:
+    get:
+      description: Version
+      operationId: version_get
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/version"
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_500_internal_server_error"
+          description: Internal Server Error
+      summary: Version
+      tags:
+      - version
+      x-openapi-router-controller: fabric_cf.orchestrator.swagger_server.controllers.version_controller
+  /metrics/overview:
+    get:
+      description: Control Framework metrics overview
+      operationId: metrics_overview_get
+      parameters:
+      - description: List of projects to exclude from the metrics overview
+        explode: true
+        in: query
+        name: excluded_projects
+        required: false
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/metrics"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_400_bad_request"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_401_unauthorized"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_403_forbidden"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_404_not_found"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_500_internal_server_error"
+          description: Internal Server Error
+      summary: Control Framework metrics overview
+      tags:
+      - metrics
+      x-openapi-router-controller: fabric_cf.orchestrator.swagger_server.controllers.metrics_controller
+  /resources:
+    get:
+      description: "Retrieve a listing and description of available resources. By\
+        \ default, a cached available resource information is returned. User can force\
+        \ to request the current available resources."
+      operationId: resources_get
+      parameters:
+      - description: Level of details
+        explode: true
+        in: query
+        name: level
+        required: true
+        schema:
+          default: 1
+          type: integer
+        style: form
+      - description: Force to retrieve current available resource information.
+        explode: true
+        in: query
+        name: force_refresh
+        required: true
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: starting date to check availability from
+        explode: true
+        in: query
+        name: start_date
+        required: false
+        schema:
+          example: 2023-01-01 16:20:15 +00:00
+          type: string
+        style: form
+      - description: end date to check availability until
+        explode: true
+        in: query
+        name: end_date
+        required: false
+        schema:
+          example: 2023-01-01 16:20:15 +00:00
+          type: string
+        style: form
+      - description: comma separated lists of sites to include
+        explode: true
+        in: query
+        name: includes
+        required: false
+        schema:
+          example: "RENC,UKY"
+          type: string
+        style: form
+      - description: comma separated lists of sites to exclude
+        explode: true
+        in: query
+        name: excludes
+        required: false
+        schema:
+          example: "SRI,LBNL"
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/resources"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_400_bad_request"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_401_unauthorized"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_403_forbidden"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_404_not_found"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_500_internal_server_error"
+          description: Internal Server Error
+      security:
+      - bearerAuth: []
+      summary: "Retrieve a listing and description of available resources. By default,\
+        \ a cached available resource information is returned. User can force to request\
+        \ the current available resources."
+      tags:
+      - resources
+      x-openapi-router-controller: fabric_cf.orchestrator.swagger_server.controllers.resources_controller
+  /portalresources:
+    get:
+      description: Retrieve a listing and description of available resources for portal
+      operationId: portalresources_get
+      parameters:
+      - description: graph format
+        explode: true
+        in: query
+        name: graph_format
+        required: true
+        schema:
+          default: GRAPHML
+          enum:
+          - GRAPHML
+          - JSON_NODELINK
+          - CYTOSCAPE
+          - NONE
+          type: string
+        style: form
+      - description: Level of details
+        explode: true
+        in: query
+        name: level
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
+      - description: Force to retrieve current available resource information.
+        explode: true
+        in: query
+        name: force_refresh
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: starting date to check availability from
+        explode: true
+        in: query
+        name: start_date
+        required: false
+        schema:
+          example: 2023-01-01 16:20:15 +00:00
+          type: string
+        style: form
+      - description: end date to check availability until
+        explode: true
+        in: query
+        name: end_date
+        required: false
+        schema:
+          example: 2023-01-01 16:20:15 +00:00
+          type: string
+        style: form
+      - description: comma separated lists of sites to include
+        explode: true
+        in: query
+        name: includes
+        required: false
+        schema:
+          example: "RENC,UKY"
+          type: string
+        style: form
+      - description: comma separated lists of sites to exclude
+        explode: true
+        in: query
+        name: excludes
+        required: false
+        schema:
+          example: "SRI,LBNL"
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/resources"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_400_bad_request"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_401_unauthorized"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_403_forbidden"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_404_not_found"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_500_internal_server_error"
+          description: Internal Server Error
+      summary: Retrieve a listing and description of available resources for portal
+      tags:
+      - resources
+      x-openapi-router-controller: fabric_cf.orchestrator.swagger_server.controllers.resources_controller
+  /slices:
+    get:
+      description: Retrieve a listing of user slices. It returns list of all slices
+        belonging to all members in a project when 'as_self' is False otherwise returns
+        only the all user's slices in a project.
+      operationId: slices_get
+      parameters:
+      - description: Search for Slices with the name
+        explode: true
+        in: query
+        name: name
+        required: false
+        schema:
+          minLength: 3
+          type: string
+        style: form
+      - description: search term applied
+        explode: true
+        in: query
+        name: search
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Exact Match for Search term
+        explode: true
+        in: query
+        name: exact_match
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: GET object as Self
+        explode: true
+        in: query
+        name: as_self
+        required: false
+        schema:
+          default: true
+          type: boolean
+        style: form
+      - description: Search for Slices in the specified states
+        explode: true
+        in: query
+        name: states
+        required: false
+        schema:
+          items:
+            enum:
+            - Nascent
+            - Configuring
+            - StableError
+            - StableOK
+            - Closing
+            - Dead
+            - Modifying
+            - ModifyOK
+            - ModifyError
+            - AllocatedOK
+            - AllocatedError
+            - All
+            type: string
+          type: array
+        style: form
+      - description: maximum number of results to return per page (1 or more)
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 5
+          format: int32
+          maximum: 200
+          minimum: 1
+          type: integer
+        style: form
+      - description: number of items to skip before starting to collect the result
+          set
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          minimum: 0
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/slices"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_400_bad_request"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_401_unauthorized"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_403_forbidden"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_404_not_found"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_500_internal_server_error"
+          description: Internal Server Error
+      security:
+      - bearerAuth: []
+      summary: Retrieve a listing of user slices
+      tags:
+      - slices
+      x-openapi-router-controller: fabric_cf.orchestrator.swagger_server.controllers.slices_controller
+  /slices/{slice_id}:
+    get:
+      description: Retrieve Slice properties
+      operationId: slices_slice_id_get
+      parameters:
+      - description: Slice identified by universally unique identifier
+        explode: false
+        in: path
+        name: slice_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: GET object as Self
+        explode: true
+        in: query
+        name: as_self
+        required: false
+        schema:
+          default: true
+          type: boolean
+        style: form
+      - description: graph format
+        explode: true
+        in: query
+        name: graph_format
+        required: true
+        schema:
+          default: GRAPHML
+          enum:
+          - GRAPHML
+          - JSON_NODELINK
+          - CYTOSCAPE
+          - NONE
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/slice_details"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_400_bad_request"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_401_unauthorized"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_403_forbidden"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_404_not_found"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_500_internal_server_error"
+          description: Internal Server Error
+      security:
+      - bearerAuth: []
+      summary: slice properties
+      tags:
+      - slices
+      x-openapi-router-controller: fabric_cf.orchestrator.swagger_server.controllers.slices_controller
+  /slices/create:
+    post:
+      description: "Request to create slice as described in the request. Request would\
+        \ be a graph ML describing the requested resources. Resources may be requested\
+        \ to be created now or in future. On success, one or more slivers are allocated,\
+        \ containing resources satisfying the request, and assigned to the given slice.\
+        \ This API returns list and description of the resources reserved for the\
+        \ slice in the form of Graph ML. Orchestrator would also trigger provisioning\
+        \ of these resources asynchronously on the appropriate sites either now or\
+        \ in the future as requested. Experimenter can invoke get slice API to get\
+        \ the latest state of the requested resources. \n"
+      operationId: slices_create_post
+      parameters:
+      - description: Slice Name
+        explode: true
+        in: query
+        name: name
+        required: true
+        schema:
+          minLength: 3
+          type: string
+        style: form
+      - description: User SSH Key
+        explode: true
+        in: query
+        name: ssh_key
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: Lease End Time for the Slice
+        explode: true
+        in: query
+        name: lease_end_time
+        required: false
+        schema:
+          type: string
+        style: form
+      requestBody:
+        $ref: "#/components/requestBodies/Request"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/slivers"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_400_bad_request"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_401_unauthorized"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_403_forbidden"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_404_not_found"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_500_internal_server_error"
+          description: Internal Server Error
+      security:
+      - bearerAuth: []
+      summary: Create slice
+      tags:
+      - slices
+      x-openapi-router-controller: fabric_cf.orchestrator.swagger_server.controllers.slices_controller
+  /slices/creates:
+    post:
+      description: "Request to create slice as described in the request. Request would\
+        \ be a graph ML describing the requested resources. Resources may be requested\
+        \ to be created now or in future. On success, one or more slivers are allocated,\
+        \ containing resources satisfying the request, and assigned to the given slice.\
+        \ This API returns list and description of the resources reserved for the\
+        \ slice in the form of Graph ML. Orchestrator would also trigger provisioning\
+        \ of these resources asynchronously on the appropriate sites either now or\
+        \ in the future as requested. Experimenter can invoke get slice API to get\
+        \ the latest state of the requested resources. \n"
+      operationId: slices_creates_post
+      parameters:
+      - description: Slice Name
+        explode: true
+        in: query
+        name: name
+        required: true
+        schema:
+          minLength: 3
+          type: string
+        style: form
+      - description: Lifetime of the slice requested in hours.
+        explode: true
+        in: query
+        name: lifetime
+        required: false
+        schema:
+          default: 24
+          type: integer
+        style: form
+      - description: Lease End Time for the Slice
+        explode: true
+        in: query
+        name: lease_start_time
+        required: false
+        schema:
+          example: 2023-01-01 16:20:15 +00:00
+          type: string
+        style: form
+      - description: Lease End Time for the Slice
+        explode: true
+        in: query
+        name: lease_end_time
+        required: false
+        schema:
+          example: 2023-01-01 16:20:15 +00:00
+          type: string
+        style: form
+      requestBody:
+        $ref: "#/components/requestBodies/payload_slices_create"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/slivers"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_400_bad_request"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_401_unauthorized"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_403_forbidden"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_404_not_found"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_500_internal_server_error"
+          description: Internal Server Error
+      security:
+      - bearerAuth: []
+      summary: Create slice
+      tags:
+      - slices
+      x-openapi-router-controller: fabric_cf.orchestrator.swagger_server.controllers.slices_controller
+  /slices/modify/{slice_id}:
+    put:
+      description: "Request to modify an existing slice as described in the request.\
+        \ Request would be a graph ML describing the experiment topolgy expected after\
+        \ a modify. The supported modify actions include adding or removing nodes,\
+        \ components, network services or interfaces of the slice. On success, one\
+        \ or more slivers are allocated, containing resources satisfying the request,\
+        \ and assigned to the given slice. This API returns list and description of\
+        \ the resources reserved for the slice in the form of Graph ML. Orchestrator\
+        \ would also trigger provisioning of these resources asynchronously on the\
+        \ appropriate sites either now or in the future as requested. Experimenter\
+        \ can invoke get slice API to get the latest state of the requested resources.\
+        \ \n"
+      operationId: slices_modify_slice_id_put
+      parameters:
+      - description: Slice identified by universally unique identifier
+        explode: false
+        in: path
+        name: slice_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        $ref: "#/components/requestBodies/payload_slices_modify"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/slivers"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_400_bad_request"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_401_unauthorized"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_403_forbidden"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_404_not_found"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_500_internal_server_error"
+          description: Internal Server Error
+      security:
+      - bearerAuth: []
+      summary: Modify an existing slice
+      tags:
+      - slices
+      x-openapi-router-controller: fabric_cf.orchestrator.swagger_server.controllers.slices_controller
+  /slices/modify/{slice_id}/accept:
+    post:
+      description: "Accept the last modify and prune any failed resources from the\
+        \ Slice. Also return the accepted slice model back to the user. \n"
+      operationId: slices_modify_slice_id_accept_post
+      parameters:
+      - description: Slice identified by universally unique identifier
+        explode: false
+        in: path
+        name: slice_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/slice_details"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_400_bad_request"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_401_unauthorized"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_403_forbidden"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_404_not_found"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_500_internal_server_error"
+          description: Internal Server Error
+      security:
+      - bearerAuth: []
+      summary: Accept the last modify an existing slice
+      tags:
+      - slices
+      x-openapi-router-controller: fabric_cf.orchestrator.swagger_server.controllers.slices_controller
+  /slices/renew/{slice_id}:
+    post:
+      description: |
+        Request to extend slice be renewed with their expiration extended. If possible, the orchestrator should extend the slivers to the requested expiration time, or to a sooner time if policy limits apply.
+      operationId: slices_renew_slice_id_post
+      parameters:
+      - description: Slice identified by universally unique identifier
+        explode: false
+        in: path
+        name: slice_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: New Lease End Time for the Slice
+        explode: true
+        in: query
+        name: lease_end_time
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_200_ok_no_content"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_400_bad_request"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_401_unauthorized"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_403_forbidden"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_404_not_found"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_500_internal_server_error"
+          description: Internal Server Error
+      security:
+      - bearerAuth: []
+      summary: Renew slice
+      tags:
+      - slices
+      x-openapi-router-controller: fabric_cf.orchestrator.swagger_server.controllers.slices_controller
+  /slices/delete/{slice_id}:
+    delete:
+      description: |
+        Request to delete slice. On success, resources associated with slice or sliver are stopped if necessary, de-provisioned and un-allocated at the respective sites.
+      operationId: slices_delete_slice_id_delete
+      parameters:
+      - description: Slice identified by universally unique identifier
+        explode: false
+        in: path
+        name: slice_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_200_ok_no_content"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_400_bad_request"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_401_unauthorized"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_403_forbidden"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_404_not_found"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_500_internal_server_error"
+          description: Internal Server Error
+      security:
+      - bearerAuth: []
+      summary: Delete slice.
+      tags:
+      - slices
+      x-openapi-router-controller: fabric_cf.orchestrator.swagger_server.controllers.slices_controller
+  /slices/delete:
+    delete:
+      description: |
+        Delete all slices for a User within a project. User identity email and project id is available in the bearer token.
+      operationId: slices_delete_delete
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_200_ok_no_content"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_400_bad_request"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_401_unauthorized"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_403_forbidden"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_404_not_found"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_500_internal_server_error"
+          description: Internal Server Error
+      security:
+      - bearerAuth: []
+      summary: Delete all slices for a User within a project.
+      tags:
+      - slices
+      x-openapi-router-controller: fabric_cf.orchestrator.swagger_server.controllers.slices_controller
+  /slivers:
+    get:
+      description: Retrieve a listing of user slivers
+      operationId: slivers_get
+      parameters:
+      - description: Slice identifier as UUID
+        explode: true
+        in: query
+        name: slice_id
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: GET object as Self
+        explode: true
+        in: query
+        name: as_self
+        required: false
+        schema:
+          default: true
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/slivers"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_400_bad_request"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_401_unauthorized"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_403_forbidden"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_404_not_found"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_500_internal_server_error"
+          description: Internal Server Error
+      security:
+      - bearerAuth: []
+      summary: Retrieve a listing of user slivers
+      tags:
+      - slivers
+      x-openapi-router-controller: fabric_cf.orchestrator.swagger_server.controllers.slivers_controller
+  /slivers/{sliver_id}:
+    get:
+      description: Retrieve Sliver properties
+      operationId: slivers_sliver_id_get
+      parameters:
+      - description: Slice identified by universally unique identifier
+        explode: true
+        in: query
+        name: slice_id
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: Sliver identified by universally unique identifier
+        explode: false
+        in: path
+        name: sliver_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: GET object as Self
+        explode: true
+        in: query
+        name: as_self
+        required: false
+        schema:
+          default: true
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/slivers"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_400_bad_request"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_401_unauthorized"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_403_forbidden"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_404_not_found"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_500_internal_server_error"
+          description: Internal Server Error
+      security:
+      - bearerAuth: []
+      summary: slivers properties
+      tags:
+      - slivers
+      x-openapi-router-controller: fabric_cf.orchestrator.swagger_server.controllers.slivers_controller
+  /poas/create/{sliver_id}:
+    post:
+      description: "Request to perform an operation action on a sliver. Supported\
+        \ actions include - reboot a VM sliver, get cpu info, get numa info, pin vCPUs,\
+        \ pin memory to a numa node etc, add/remove ssh keys.  \n"
+      operationId: poas_create_sliver_id_post
+      parameters:
+      - description: Sliver identified by universally unique identifier
+        explode: false
+        in: path
+        name: sliver_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        $ref: "#/components/requestBodies/payload_poa"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/poa"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_400_bad_request"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_401_unauthorized"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_403_forbidden"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_404_not_found"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_500_internal_server_error"
+          description: Internal Server Error
+      security:
+      - bearerAuth: []
+      summary: Perform an operational action on a sliver.
+      tags:
+      - poas
+      x-openapi-router-controller: fabric_cf.orchestrator.swagger_server.controllers.poas_controller
+  /poas/:
+    get:
+      description: "Request get the status of the POAs  \n"
+      operationId: poas_get
+      parameters:
+      - description: Search for POAs for a sliver
+        explode: true
+        in: query
+        name: sliver_id
+        required: false
+        schema:
+          minLength: 3
+          type: string
+        style: form
+      - description: Search for POAs in the specified states
+        explode: true
+        in: query
+        name: states
+        required: false
+        schema:
+          items:
+            enum:
+            - Nascent
+            - SentToAuthority
+            - Performing
+            - AwaitingCompletion
+            - Success
+            - Failed
+            type: string
+          type: array
+        style: form
+      - description: maximum number of results to return per page (1 or more)
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 5
+          format: int32
+          maximum: 200
+          minimum: 1
+          type: integer
+        style: form
+      - description: number of items to skip before starting to collect the result
+          set
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          minimum: 0
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/poa"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_400_bad_request"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_401_unauthorized"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_403_forbidden"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_404_not_found"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_500_internal_server_error"
+          description: Internal Server Error
+      security:
+      - bearerAuth: []
+      summary: Request get the status of the POAs.
+      tags:
+      - poas
+      x-openapi-router-controller: fabric_cf.orchestrator.swagger_server.controllers.poas_controller
+  /poas/{poa_id}:
+    get:
+      description: "Request get the status of the POA identified by poa_id.  \n"
+      operationId: poas_poa_id_get
+      parameters:
+      - description: Poa Id for the POA triggered
+        explode: false
+        in: path
+        name: poa_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/poa"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_400_bad_request"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_401_unauthorized"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_403_forbidden"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_404_not_found"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/status_500_internal_server_error"
+          description: Internal Server Error
+      security:
+      - bearerAuth: []
+      summary: Perform an operational action on a sliver.
+      tags:
+      - poas
+      x-openapi-router-controller: fabric_cf.orchestrator.swagger_server.controllers.poas_controller
+components:
+  requestBodies:
+    Request:
+      content:
+        application/json:
+          schema:
+            type: string
+      required: true
+    payload_slices_modify:
+      content:
+        text/plain:
+          schema:
+            type: string
+      description: Modify a Slice
+      required: true
+    payload_slices_create:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/slices_post"
+      description: Create new Slice
+      required: true
+    payload_poa:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/poa_post"
+      description: Perform Operation Action
+      required: true
+  schemas:
+    poa_post:
+      properties:
+        operation:
+          enum:
+          - cpuinfo
+          - numainfo
+          - cpupin
+          - numatune
+          - reboot
+          - addkey
+          - removekey
+          - rescan
+          type: string
+        data:
+          $ref: "#/components/schemas/poa_post_data"
+      required:
+      - operation
+      type: object
+    slices_post:
+      properties:
+        graph_model:
+          type: string
+        ssh_keys:
+          items:
+            type: string
+          maxItems: 10
+          type: array
+      required:
+      - graph_model
+      - ssh_keys
+      type: object
+    status_200_ok_single:
+      properties:
+        size:
+          default: 1
+          type: integer
+        status:
+          default: 200
+          type: integer
+        type:
+          type: string
+      type: object
+    status_200_ok_no_content:
+      example:
+        data:
+        - details: details
+          message: No Content
+        - details: details
+          message: No Content
+        size: 0
+        type: no_content
+        status: 6
+      properties:
+        data:
+          items:
+            $ref: "#/components/schemas/status_200_ok_no_content_data"
+          type: array
+        type:
+          default: no_content
+          type: string
+        size:
+          default: 1
+          type: integer
+        status:
+          default: 200
+          type: integer
+      type: object
+    status_200_ok_paginated:
+      properties:
+        limit:
+          type: integer
+        offset:
+          type: integer
+        size:
+          type: integer
+        status:
+          default: 200
+          type: integer
+        total:
+          type: integer
+        type:
+          type: string
+      type: object
+    status_400_bad_request:
+      example:
+        errors:
+        - size: 1
+          details: details
+          message: Bad Request
+          type: error
+          status: 5
+        - size: 1
+          details: details
+          message: Bad Request
+          type: error
+          status: 5
+      properties:
+        errors:
+          items:
+            $ref: "#/components/schemas/status_400_bad_request_errors"
+          type: array
+      type: object
+    status_401_unauthorized:
+      example:
+        size: 5
+        type: error
+        errors:
+        - details: details
+          message: Unauthorized
+        - details: details
+          message: Unauthorized
+        status: 2
+      properties:
+        errors:
+          items:
+            $ref: "#/components/schemas/status_401_unauthorized_errors"
+          type: array
+        type:
+          default: error
+          type: string
+        size:
+          default: 1
+          type: integer
+        status:
+          default: 401
+          type: integer
+      type: object
+    status_403_forbidden:
+      example:
+        size: 7
+        type: error
+        errors:
+        - details: details
+          message: Forbidden
+        - details: details
+          message: Forbidden
+        status: 9
+      properties:
+        errors:
+          items:
+            $ref: "#/components/schemas/status_403_forbidden_errors"
+          type: array
+        type:
+          default: error
+          type: string
+        size:
+          default: 1
+          type: integer
+        status:
+          default: 403
+          type: integer
+      type: object
+    status_404_not_found:
+      example:
+        size: 3
+        type: error
+        errors:
+        - details: details
+          message: Not Found
+        - details: details
+          message: Not Found
+        status: 2
+      properties:
+        errors:
+          items:
+            $ref: "#/components/schemas/status_404_not_found_errors"
+          type: array
+        type:
+          default: error
+          type: string
+        size:
+          default: 1
+          type: integer
+        status:
+          default: 404
+          type: integer
+      type: object
+    status_500_internal_server_error:
+      example:
+        size: 1
+        type: error
+        errors:
+        - details: details
+          message: Internal Server Error
+        - details: details
+          message: Internal Server Error
+        status: 5
+      properties:
+        errors:
+          items:
+            $ref: "#/components/schemas/status_500_internal_server_error_errors"
+          type: array
+        type:
+          default: error
+          type: string
+        size:
+          default: 1
+          type: integer
+        status:
+          default: 500
+          type: integer
+      type: object
+    status_200_ok_no_content_data:
+      example:
+        details: details
+        message: No Content
+      properties:
+        message:
+          default: No Content
+          type: string
+        details:
+          type: string
+      type: object
+    status_400_bad_request_errors:
+      example:
+        size: 1
+        details: details
+        message: Bad Request
+        type: error
+        status: 5
+      properties:
+        message:
+          default: Bad Request
+          type: string
+        details:
+          type: string
+        type:
+          default: error
+          type: string
+        size:
+          default: 1
+          type: integer
+        status:
+          default: 400
+          type: integer
+      type: object
+    status_401_unauthorized_errors:
+      example:
+        details: details
+        message: Unauthorized
+      properties:
+        message:
+          default: Unauthorized
+          type: string
+        details:
+          type: string
+      type: object
+    status_403_forbidden_errors:
+      example:
+        details: details
+        message: Forbidden
+      properties:
+        message:
+          default: Forbidden
+          type: string
+        details:
+          type: string
+      type: object
+    status_404_not_found_errors:
+      example:
+        details: details
+        message: Not Found
+      properties:
+        message:
+          default: Not Found
+          type: string
+        details:
+          type: string
+      type: object
+    status_500_internal_server_error_errors:
+      example:
+        details: details
+        message: Internal Server Error
+      properties:
+        message:
+          default: Internal Server Error
+          type: string
+        details:
+          type: string
+      type: object
+    metrics:
+      allOf:
+      - $ref: "#/components/schemas/status_200_ok_single"
+      - properties:
+          results:
+            items:
+              type: object
+            type: array
+        type: object
+      example:
+        size: 0
+        type: type
+        results:
+        - "{}"
+        - "{}"
+        status: 6
+      type: object
+    slices:
+      allOf:
+      - $ref: "#/components/schemas/status_200_ok_paginated"
+      - properties:
+          data:
+            items:
+              $ref: "#/components/schemas/slice"
+            type: array
+        type: object
+      example:
+        total: 5
+        offset: 6
+        size: 1
+        data:
+        - owner_email: owner_email
+          lease_end_time: lease_end_time
+          project_id: project_id
+          owner_user_id: owner_user_id
+          name: name
+          model: model
+          state: state
+          project_name: project_name
+          graph_id: graph_id
+          lease_start_time: lease_start_time
+          slice_id: slice_id
+        - owner_email: owner_email
+          lease_end_time: lease_end_time
+          project_id: project_id
+          owner_user_id: owner_user_id
+          name: name
+          model: model
+          state: state
+          project_name: project_name
+          graph_id: graph_id
+          lease_start_time: lease_start_time
+          slice_id: slice_id
+        limit: 0
+        type: type
+        status: 5
+      type: object
+    slice_details:
+      allOf:
+      - $ref: "#/components/schemas/status_200_ok_single"
+      - properties:
+          data:
+            items:
+              $ref: "#/components/schemas/slice"
+            type: array
+        type: object
+      example:
+        size: 0
+        data:
+        - owner_email: owner_email
+          lease_end_time: lease_end_time
+          project_id: project_id
+          owner_user_id: owner_user_id
+          name: name
+          model: model
+          state: state
+          project_name: project_name
+          graph_id: graph_id
+          lease_start_time: lease_start_time
+          slice_id: slice_id
+        - owner_email: owner_email
+          lease_end_time: lease_end_time
+          project_id: project_id
+          owner_user_id: owner_user_id
+          name: name
+          model: model
+          state: state
+          project_name: project_name
+          graph_id: graph_id
+          lease_start_time: lease_start_time
+          slice_id: slice_id
+        type: type
+        status: 6
+      type: object
+    slice:
+      example:
+        owner_email: owner_email
+        lease_end_time: lease_end_time
+        project_id: project_id
+        owner_user_id: owner_user_id
+        name: name
+        model: model
+        state: state
+        project_name: project_name
+        graph_id: graph_id
+        lease_start_time: lease_start_time
+        slice_id: slice_id
+      properties:
+        model:
+          type: string
+        lease_start_time:
+          type: string
+        lease_end_time:
+          type: string
+        state:
+          type: string
+        project_id:
+          type: string
+        project_name:
+          type: string
+        graph_id:
+          type: string
+        name:
+          type: string
+        slice_id:
+          type: string
+        owner_user_id:
+          type: string
+        owner_email:
+          type: string
+      required:
+      - graph_id
+      - name
+      - slice_id
+      type: object
+    slivers:
+      allOf:
+      - $ref: "#/components/schemas/status_200_ok_paginated"
+      - properties:
+          data:
+            items:
+              $ref: "#/components/schemas/sliver"
+            type: array
+        type: object
+      example:
+        total: 5
+        offset: 6
+        size: 1
+        data:
+        - owner_email: owner_email
+          sliver_type: sliver_type
+          owner_user_id: owner_user_id
+          graph_node_id: graph_node_id
+          sliver_id: sliver_id
+          pending_state: pending_state
+          lease_end_time: lease_end_time
+          sliver: "{}"
+          join_state: join_state
+          state: state
+          notice: notice
+          lease_start_time: lease_start_time
+          slice_id: slice_id
+        - owner_email: owner_email
+          sliver_type: sliver_type
+          owner_user_id: owner_user_id
+          graph_node_id: graph_node_id
+          sliver_id: sliver_id
+          pending_state: pending_state
+          lease_end_time: lease_end_time
+          sliver: "{}"
+          join_state: join_state
+          state: state
+          notice: notice
+          lease_start_time: lease_start_time
+          slice_id: slice_id
+        limit: 0
+        type: type
+        status: 5
+      type: object
+    sliver:
+      example:
+        owner_email: owner_email
+        sliver_type: sliver_type
+        owner_user_id: owner_user_id
+        graph_node_id: graph_node_id
+        sliver_id: sliver_id
+        pending_state: pending_state
+        lease_end_time: lease_end_time
+        sliver: "{}"
+        join_state: join_state
+        state: state
+        notice: notice
+        lease_start_time: lease_start_time
+        slice_id: slice_id
+      properties:
+        notice:
+          type: string
+        sliver_type:
+          type: string
+        sliver:
+          type: object
+        lease_start_time:
+          type: string
+        lease_end_time:
+          type: string
+        state:
+          type: string
+        pending_state:
+          type: string
+        join_state:
+          type: string
+        graph_node_id:
+          type: string
+        slice_id:
+          type: string
+        sliver_id:
+          type: string
+        owner_user_id:
+          type: string
+        owner_email:
+          type: string
+      required:
+      - graph_node_id
+      - slice_id
+      - sliver_id
+      type: object
+    version:
+      allOf:
+      - $ref: "#/components/schemas/status_200_ok_single"
+      - properties:
+          data:
+            items:
+              $ref: "#/components/schemas/version_data"
+            type: array
+        type: object
+      example:
+        size: 0
+        data:
+        - reference: https://github.com/fabric-testbed/ControlFramework
+          version: 1.0.0
+        - reference: https://github.com/fabric-testbed/ControlFramework
+          version: 1.0.0
+        type: type
+        status: 6
+      type: object
+    version_data:
+      example:
+        reference: https://github.com/fabric-testbed/ControlFramework
+        version: 1.0.0
+      properties:
+        reference:
+          example: https://github.com/fabric-testbed/ControlFramework
+          type: string
+        version:
+          example: 1.0.0
+          type: string
+      required:
+      - reference
+      - version
+    resources:
+      allOf:
+      - $ref: "#/components/schemas/status_200_ok_single"
+      - properties:
+          data:
+            items:
+              $ref: "#/components/schemas/resource"
+            type: array
+        type: object
+      example:
+        size: 0
+        data:
+        - model: model
+        - model: model
+        type: type
+        status: 6
+      type: object
+    resource:
+      example:
+        model: model
+      properties:
+        model:
+          type: string
+      required:
+      - model
+      type: object
+    poa:
+      allOf:
+      - $ref: "#/components/schemas/status_200_ok_single"
+      - properties:
+          data:
+            items:
+              $ref: "#/components/schemas/poa_data"
+            type: array
+        type: object
+      example:
+        size: 0
+        data:
+        - poa_id: poa_id
+          state: state
+          sliver_id: sliver_id
+          error: error
+          operation: operation
+          slice_id: slice_id
+          info: "{}"
+        - poa_id: poa_id
+          state: state
+          sliver_id: sliver_id
+          error: error
+          operation: operation
+          slice_id: slice_id
+          info: "{}"
+        type: type
+        status: 6
+      type: object
+    poa_data:
+      example:
+        poa_id: poa_id
+        state: state
+        sliver_id: sliver_id
+        error: error
+        operation: operation
+        slice_id: slice_id
+        info: "{}"
+      properties:
+        operation:
+          type: string
+        poa_id:
+          type: string
+        state:
+          type: string
+        sliver_id:
+          type: string
+        slice_id:
+          type: string
+        error:
+          type: string
+        info:
+          type: object
+      type: object
+    poa_post_data_vcpu_cpu_map:
+      properties:
+        vcpu:
+          type: string
+        cpu:
+          type: string
+      required:
+      - cpu
+      - vcpu
+      type: object
+    poa_post_data_keys:
+      properties:
+        key:
+          type: string
+        comment:
+          type: string
+      required:
+      - comment
+      - key
+      type: object
+    poa_post_data:
+      properties:
+        vcpu_cpu_map:
+          items:
+            $ref: "#/components/schemas/poa_post_data_vcpu_cpu_map"
+          type: array
+        node_set:
+          items:
+            type: string
+          type: array
+        bdf:
+          items:
+            type: string
+          type: array
+        keys:
+          items:
+            $ref: "#/components/schemas/poa_post_data_keys"
+          type: array
+      type: object
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http
+      x-bearerInfoFunc: fabric_cf.orchestrator.swagger_server.controllers.authorization_controller.check_bearerAuth
