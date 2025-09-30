@@ -1,4 +1,4 @@
-module github.com/GIT_USER_ID/GIT_REPO_ID
+module github.com/csc478-wcu/fabric-orchestrator-go-client
 
 go 1.18
 
