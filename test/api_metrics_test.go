@@ -13,7 +13,7 @@ import (
 	"context"
 	"testing"
 
-	openapiclient "github.com/csc478-wcu/fabric-orchestrator-go-client"
+	openapiclient "github.com/CSC478-WCU/fabric-orchestrator-go-client"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
